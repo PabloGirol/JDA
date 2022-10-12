@@ -2009,9 +2009,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * all properties and settings of the Guild.
      * <br>You modify multiple fields in one request by chaining setters before calling {@link RestAction#queue() RestAction.queue()}.
      *
-     * <p>This is a lazy idempotent getter. The manager is retained after the first call.
-     * This getter is not thread-safe and would require guards by the user.
-     *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}
      *
@@ -3439,7 +3436,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         The {@link UserSnowflake} to timeout.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  temporal
-     *         The time the specified Member will be released from time out or null to remove the time out
+     *         The time the specified Member will be released from time out
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
@@ -3449,6 +3446,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         If any of the following are true
      *         <ul>
      *             <li>The provided {@code user} is null</li>
+     *             <li>The provided {@code temporal} is null</li>
      *             <li>The provided {@code temporal} is in the past</li>
      *             <li>The provided {@code temporal} is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
