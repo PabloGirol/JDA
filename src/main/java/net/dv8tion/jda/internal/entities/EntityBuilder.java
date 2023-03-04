@@ -201,16 +201,22 @@ public class EntityBuilder
     {
         if (!getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS))
             return;
-        SnowflakeCacheViewImpl<ScheduledEvent> eventView = guildObj.getScheduledEventsView();
         for (int i = 0; i < array.length(); i++)
         {
             DataObject object = array.getObject(i);
-            if (object.isNull("id"))
+            try
             {
-                LOG.error("Received GUILD_CREATE with a scheduled event with a null ID. JSON: {}", object);
-                continue;
+                if (object.isNull("id"))
+                {
+                    LOG.error("Received GUILD_CREATE with a scheduled event with a null ID. JSON: {}", object);
+                    continue;
+                }
+                createScheduledEvent(guildObj, object);
             }
-            createScheduledEvent(guildObj, object);
+            catch (ParsingException exception)
+            {
+                LOG.error("Received GUILD_CREATE with a scheduled event that failed to parse. JSON: {}", object, exception);
+            }
         }
     }
 
@@ -1023,7 +1029,12 @@ public class EntityBuilder
             scheduledEvent.setLocation(json.getString("channel_id"));
             break;
         case EXTERNAL:
-            String externalLocation = json.getObject("entity_metadata").getString("location");
+            String externalLocation;
+            if (json.isNull("entity_metadata") || json.getObject("entity_metadata").isNull("location"))
+                externalLocation = "";
+            else
+                externalLocation = json.getObject("entity_metadata").getString("location");
+
             scheduledEvent.setLocation(externalLocation);
         }
         return scheduledEvent;
@@ -1751,15 +1762,17 @@ public class EntityBuilder
         if (guild != null && !jsonObject.isNull("thread"))
             startedThread = createThreadChannel(guild, jsonObject.getObject("thread"), guild.getIdLong());
 
+        int position = jsonObject.getInt("position", -1);
+
         if (!type.isSystem())
         {
             return new ReceivedMessage(id, channel, type, messageReference, fromWebhook, applicationId, tts, pinned,
-                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags, messageInteraction, startedThread);
+                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags, messageInteraction, startedThread, position);
         }
         else
         {
             return new SystemMessage(id, channel, type, messageReference, fromWebhook, applicationId, tts, pinned,
-                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, flags, startedThread);
+                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, flags, startedThread, position);
         }
     }
 
@@ -2244,7 +2257,9 @@ public class EntityBuilder
         for (int i = 0; i < welcomeChannelsArray.length(); i++)
         {
             final DataObject welcomeChannelObj = welcomeChannelsArray.getObject(i);
-            final EmojiUnion emoji = createEmoji(welcomeChannelObj, "emoji_name", "emoji_id");
+            EmojiUnion emoji = null;
+            if (!welcomeChannelObj.isNull("emoji_id") || !welcomeChannelObj.isNull("emoji_name"))
+                emoji = createEmoji(welcomeChannelObj, "emoji_name", "emoji_id");
 
             welcomeChannels.add(new GuildWelcomeScreenImpl.ChannelImpl(
                     guild,
@@ -2390,6 +2405,7 @@ public class EntityBuilder
     public AuditLogEntry createAuditLogEntry(GuildImpl guild, DataObject entryJson, DataObject userJson, DataObject webhookJson)
     {
         final long targetId = entryJson.getLong("target_id", 0);
+        final long userId = entryJson.getLong("user_id", 0);
         final long id = entryJson.getLong("id");
         final int typeKey = entryJson.getInt("action_type");
         final DataArray changes = entryJson.isNull("changes") ? null : entryJson.getArray("changes");
@@ -2420,7 +2436,7 @@ public class EntityBuilder
         CaseInsensitiveMap<String, Object> optionMap = options != null
                 ? new CaseInsensitiveMap<>(options.toMap()) : null;
 
-        return new AuditLogEntry(type, typeKey, id, targetId, guild, user, webhook, reason, changeMap, optionMap);
+        return new AuditLogEntry(type, typeKey, id, userId, targetId, guild, user, webhook, reason, changeMap, optionMap);
     }
 
     public AuditLogChange createAuditLogChange(DataObject change)
