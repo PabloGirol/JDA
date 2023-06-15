@@ -18,6 +18,8 @@ package net.dv8tion.jda.api;
 import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -27,6 +29,7 @@ import javax.annotation.Nullable;
 import java.awt.*;
 import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -45,7 +48,7 @@ public class EmbedBuilder
     public final static String ZERO_WIDTH_SPACE = "\u200E";
     public final static Pattern URL_PATTERN = Pattern.compile("\\s*(https?|attachment)://\\S+\\s*", Pattern.CASE_INSENSITIVE);
 
-    private final List<MessageEmbed.Field> fields = new LinkedList<>();
+    private final List<MessageEmbed.Field> fields = new ArrayList<>();
     private final StringBuilder description = new StringBuilder();
     private int color = Role.DEFAULT_COLOR_RAW;
     private String url, title;
@@ -82,6 +85,69 @@ public class EmbedBuilder
     public EmbedBuilder(@Nullable MessageEmbed embed)
     {
         copyFrom(embed);
+    }
+
+    /**
+     * Creates an instance of this builder from the provided {@link DataObject}.
+     *
+     * <p>This is the inverse of {@link MessageEmbed#toData()}.
+     *
+     * @param  data
+     *         The serialized embed object
+     *
+     * @throws IllegalArgumentException
+     *         If the provided data is {@code null} or invalid
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the provided data is malformed
+     *
+     * @return The new builder instance
+     */
+    @Nonnull
+    public static EmbedBuilder fromData(@Nonnull DataObject data)
+    {
+        Checks.notNull(data, "DataObject");
+        EmbedBuilder builder = new EmbedBuilder();
+
+        builder.setTitle(data.getString("title", null));
+        builder.setUrl(data.getString("url", null));
+        builder.setDescription(data.getString("description", ""));
+        builder.setTimestamp(data.isNull("timestamp") ? null : OffsetDateTime.parse(data.getString("timestamp")));
+        builder.setColor(data.getInt("color", Role.DEFAULT_COLOR_RAW));
+
+        data.optObject("thumbnail").ifPresent(thumbnail ->
+            builder.setThumbnail(thumbnail.getString("url"))
+        );
+
+        data.optObject("author").ifPresent(author ->
+            builder.setAuthor(
+                author.getString("name", ""),
+                author.getString("url", null),
+                author.getString("icon_url", null)
+            )
+        );
+
+        data.optObject("footer").ifPresent(footer ->
+            builder.setFooter(
+                footer.getString("text", ""),
+                footer.getString("icon_url", null)
+            )
+        );
+
+        data.optObject("image").ifPresent(image ->
+            builder.setImage(image.getString("url"))
+        );
+
+        data.optArray("fields").ifPresent(arr ->
+            arr.stream(DataArray::getObject).forEach(field ->
+                builder.addField(
+                    field.getString("name", ZERO_WIDTH_SPACE),
+                    field.getString("value", ZERO_WIDTH_SPACE),
+                    field.getBoolean("inline", false)
+                )
+            )
+        );
+
+        return builder;
     }
 
     /**
@@ -261,6 +327,7 @@ public class EmbedBuilder
     /**
      * Sets the Title of the embed.
      * <br>You can provide {@code null} as url if no url should be used.
+     * <br>If you want to set a URL without a title, use {@link #setUrl(String)} instead.
      *
      * <p><b><a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/04-setTitle.png">Example</a></b>
      *
@@ -300,6 +367,34 @@ public class EmbedBuilder
             this.title = title;
             this.url = url;
         }
+        return this;
+    }
+
+    /**
+     * Sets the URL of the embed.
+     * <br>The Discord client mostly only uses this property in combination with the {@link #setTitle(String) title} for a clickable Hyperlink.
+     *
+     * <p>If multiple embeds in a message use the same URL, the Discord client will merge them into a single embed and aggregate images into a gallery view.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the character limit for {@code url}, defined by {@link net.dv8tion.jda.api.entities.MessageEmbed#URL_MAX_LENGTH} as {@value net.dv8tion.jda.api.entities.MessageEmbed#URL_MAX_LENGTH},
+     *             is exceeded.</li>
+     *             <li>If the provided {@code url} is not a properly formatted http or https url.</li>
+     *         </ul>
+     *
+     * @return the builder after the URL has been set
+     *
+     * @see    #setTitle(String, String)
+     */
+    @Nonnull
+    public EmbedBuilder setUrl(@Nullable String url)
+    {
+        if (Helpers.isBlank(url))
+            url = null;
+        urlCheck(url);
+        this.url = url;
+
         return this;
     }
 
@@ -625,7 +720,7 @@ public class EmbedBuilder
         }
         else
         {
-            Checks.check(name.length() <= MessageEmbed.AUTHOR_MAX_LENGTH, "Name cannot be longer than %d characters.", MessageEmbed.AUTHOR_MAX_LENGTH);
+            Checks.notLonger(name, MessageEmbed.AUTHOR_MAX_LENGTH, "Name");
             urlCheck(url);
             urlCheck(iconUrl);
             this.author = new MessageEmbed.AuthorInfo(name, url, iconUrl, null);
@@ -700,7 +795,7 @@ public class EmbedBuilder
         }
         else
         {
-            Checks.check(text.length() <= MessageEmbed.TEXT_MAX_LENGTH, "Text cannot be longer than %d characters.", MessageEmbed.TEXT_MAX_LENGTH);
+            Checks.notLonger(text, MessageEmbed.TEXT_MAX_LENGTH, "Text");
             urlCheck(iconUrl);
             this.footer = new MessageEmbed.Footer(text, iconUrl, null);
         }
@@ -809,7 +904,7 @@ public class EmbedBuilder
     {
         if (url != null)
         {
-            Checks.check(url.length() <= MessageEmbed.URL_MAX_LENGTH, "URL cannot be longer than %d characters.", MessageEmbed.URL_MAX_LENGTH);
+            Checks.notLonger(url, MessageEmbed.URL_MAX_LENGTH, "URL");
             Checks.check(URL_PATTERN.matcher(url).matches(), "URL must be a valid http(s) or attachment url.");
         }
     }

@@ -519,9 +519,12 @@ public class DefaultShardManager implements ShardManager
         RestConfig restConfig = this.restConfigProvider.apply(shardId);
         if (restConfig == null)
             restConfig = new RestConfig();
-        final JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig, restConfig);
+
+        JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig, restConfig);
         jda.setMemberCachePolicy(shardingConfig.getMemberCachePolicy());
         threadingConfig.init(jda::getIdentifierString);
+        jda.initRequester();
+
         // We can only do member chunking with the GUILD_MEMBERS intent
         if ((shardingConfig.getIntents() & GatewayIntent.GUILD_MEMBERS.getRawValue()) == 0)
             jda.setChunkingFilter(ChunkingFilter.NONE);
@@ -536,7 +539,7 @@ public class DefaultShardManager implements ShardManager
         if (this.sessionConfig.getAudioSendFactory() != null)
             jda.setAudioSendFactory(this.sessionConfig.getAudioSendFactory());
 
-        this.eventConfig.getListeners().forEach(jda::addEventListener);
+        jda.addEventListener(this.eventConfig.getListeners().toArray());
         this.eventConfig.getListenerProviders().forEach(provider -> jda.addEventListener(provider.apply(shardId)));
 
         // Set the presence information before connecting to have the correct information ready when sending IDENTIFY

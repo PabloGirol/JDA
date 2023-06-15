@@ -140,17 +140,20 @@ public interface Message extends ISnowflake, Formattable
     String JUMP_URL = "https://discord.com/channels/%s/%s/%s";
 
     /**
-     * The maximum sendable file size (8 MiB)
+     * The maximum sendable file size (25 MiB)
      *
      *  @see MessageRequest#setFiles(Collection)
      */
-    int MAX_FILE_SIZE = 8 << 20;
+    int MAX_FILE_SIZE = 25 << 20;
 
     /**
      * The maximum sendable file size for nitro (50 MiB)
      *
      * @see MessageRequest#setFiles(Collection)
+     *
+     * @deprecated Self-bots are not supported anymore and the value is outdated.
      */
+    @Deprecated
     int MAX_FILE_SIZE_NITRO = 50 << 20;
 
     /**
@@ -1129,6 +1132,18 @@ public interface Message extends ISnowflake, Formattable
      *
      * <p>For further info, see {@link GuildMessageChannel#sendStickers(Collection)} and {@link MessageCreateAction#setMessageReference(Message)}.
      *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If this message no longer exists</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     * </ul>
+     *
      * @param  stickers
      *         The 1-3 stickers to send
      *
@@ -1169,6 +1184,18 @@ public interface Message extends ISnowflake, Formattable
      *
      * <p>For further info, see {@link GuildMessageChannel#sendStickers(Collection)} and {@link MessageCreateAction#setMessageReference(Message)}.
      *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If this message no longer exists</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     * </ul>
+     *
      * @param  stickers
      *         The 1-3 stickers to send
      *
@@ -1201,7 +1228,19 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
-     * Shortcut for {@code getChannel().sendMessage(content).setMessageReference(this)}-
+     * Shortcut for {@code getChannel().sendMessage(content).setMessageReference(this)}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If this message no longer exists</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     * </ul>
      *
      * @param  content
      *         The reply content
@@ -1221,7 +1260,19 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
-     * Shortcut for {@code getChannel().sendMessage(data).setMessageReference(this)}-
+     * Shortcut for {@code getChannel().sendMessage(data).setMessageReference(this)}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If this message no longer exists</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     * </ul>
      *
      * @param  msg
      *         The {@link MessageCreateData} to send
@@ -1241,7 +1292,19 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
-     * Shortcut for {@code getChannel().sendMessageEmbeds(embed, other).setMessageReference(this)}-
+     * Shortcut for {@code getChannel().sendMessageEmbeds(embed, other).setMessageReference(this)}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If this message no longer exists</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     * </ul>
      *
      * @param  embed
      *         The {@link MessageEmbed} to send
@@ -1268,7 +1331,19 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
-     * Shortcut for {@code getChannel().sendMessageEmbeds(embeds).setMessageReference(this)}-
+     * Shortcut for {@code getChannel().sendMessageEmbeds(embeds).setMessageReference(this)}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If this message no longer exists</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     * </ul>
      *
      * @param  embeds
      *         The {@link MessageEmbed MessageEmbeds} to send
@@ -1289,6 +1364,18 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Shortcut for {@code getChannel().sendMessageComponents(component, other).setMessageReference(this)}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If this message no longer exists</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     * </ul>
      *
      * @param  component
      *         The {@link LayoutComponent} to send
@@ -1317,6 +1404,18 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Shortcut for {@code getChannel().sendMessageComponents(components).setMessageReference(this)}.
      *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If this message no longer exists</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     * </ul>
+     *
      * @param  components
      *         The {@link LayoutComponent LayoutComponents} to send
      *
@@ -1335,7 +1434,19 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
-     * Shortcut for {@code getChannel().sendMessageFormat(format, args).setMessageReference(this)}-
+     * Shortcut for {@code getChannel().sendMessageFormat(format, args).setMessageReference(this)}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If this message no longer exists</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     * </ul>
      *
      * @param  format
      *         The format string
@@ -1357,7 +1468,19 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
-     * Shortcut for {@code getChannel().sendFiles(files).setMessageReference(this)}-
+     * Shortcut for {@code getChannel().sendFiles(files).setMessageReference(this)}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If this message no longer exists</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     * </ul>
      *
      * @param  files
      *         The {@link FileUpload FileUploads} to send
@@ -1377,7 +1500,19 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
-     * Shortcut for {@code getChannel().sendFiles(files).setMessageReference(this)}-
+     * Shortcut for {@code getChannel().sendFiles(files).setMessageReference(this)}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If this message no longer exists</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     * </ul>
      *
      * @param  files
      *         The {@link FileUpload FileUploads} to send
@@ -2162,7 +2297,11 @@ public interface Message extends ISnowflake, Formattable
          * Indicates, that this message will not trigger push and desktop notifications
          * @see Message#isSuppressedNotifications
          */
-        NOTIFICATIONS_SUPPRESSED(12);
+        NOTIFICATIONS_SUPPRESSED(12),
+        /**
+         * The Message is a voice message, containing an audio attachment
+         */
+        IS_VOICE_MESSAGE(13);
 
         private final int value;
 
@@ -2237,10 +2376,12 @@ public interface Message extends ISnowflake, Formattable
         private final int height;
         private final int width;
         private final boolean ephemeral;
+        private final String waveform;
+        private final double duration;
 
         private final JDAImpl jda;
 
-        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, String description, int size, int height, int width, boolean ephemeral, JDAImpl jda)
+        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, String description, int size, int height, int width, boolean ephemeral, String waveform, double duration, JDAImpl jda)
         {
             this.id = id;
             this.url = url;
@@ -2252,6 +2393,8 @@ public interface Message extends ISnowflake, Formattable
             this.height = height;
             this.width = width;
             this.ephemeral = ephemeral;
+            this.waveform = waveform;
+            this.duration = duration;
             this.jda = jda;
         }
 
@@ -2655,6 +2798,35 @@ public interface Message extends ISnowflake, Formattable
         public boolean isEphemeral()
         {
             return ephemeral;
+        }
+
+        /**
+         * Gets the waveform data encoded in this attachment. This is currently only present on
+         * {@link MessageFlag#IS_VOICE_MESSAGE voice messages}.
+         *
+         * @return A possibly-{@code null} array of integers representing the amplitude of the
+         *         audio over time. Amplitude is sampled at 10Hz, but the client will decrease
+         *         this to keep the waveform to at most 256 bytes.
+         *         The values in this array are <b>unsigned</b>.
+         */
+        @Nullable
+        public byte[] getWaveform()
+        {
+            if (waveform == null)
+                return null;
+            return Base64.getDecoder().decode(waveform);
+        }
+
+        /**
+         * Gets the duration of this attachment. This is currently only nonzero on
+         * {@link MessageFlag#IS_VOICE_MESSAGE voice messages}.
+         *
+         * @return The duration of this attachment's audio in seconds, or {@code 0}
+         *         if this is not a voice message.
+         */
+        public double getDuration()
+        {
+            return duration;
         }
 
         /**
